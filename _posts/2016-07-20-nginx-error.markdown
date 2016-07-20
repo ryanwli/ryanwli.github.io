@@ -2,7 +2,7 @@
 layout:     post
 title:      "nginx反向代理上的err_incomplete_chunked_encoding"
 subtitle:   "今天copy了一台机器上的nginx到另外一台，导致在另外一台反向代理出来的站点很多静态资源出现“err_incomplete_chunked_encoding”的错误；"
-date:       2016-07-20 12:00:00
+date:       2016-07-19 12:00:00
 author:     "ryan"
 header-img: "img/post-bg-06.jpg"
 ---
