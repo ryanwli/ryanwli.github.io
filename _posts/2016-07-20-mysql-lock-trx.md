@@ -68,4 +68,52 @@ header-img: "img/post-bg-06.jpg"
 
 ## 4.Snapshot read & Current read
 
+### Snapshot read
+
+Snapshot read直译过来就是快照读，mysql innodb实现了大多数数据库都有的“多版本并发控制”(英文简写为MVCC-Multiple Version Concurrency Control)，我们大部分的查询都是使用的快照读，他读到的不是该行真正的数据，而是内存中一个副本，所以我们在执行事务中各种X锁定之后还能读取数据(读写都不冲突)，就归功于该机制，他使得数据库的并发性能得到巨大的提升，所以基本市面上的关系型数据库都支持该机制，下面给一些列子：
+
+> 不在Serializable(后面会说)的事务隔离级别的其他任何地方使用下面语句都是使用snapshot read
+>
+> select * from test_id2 where id=10
+
+### Current read
+
+Current read直译过来就是当前读，我们在事务中执行S和X锁定，都是对当前行的操作，也肯定要读相关行的原始数据，这样才能完成并发想要的控制，这个当前读也有一个术语“锁并发控制”(英文简写为LBCC-Lock Based Concurrency Control)，这个机制会导致，只要有行级X锁，所有读都会被block，注意是所有的！所以LBCC并发很弱；
+
+> select * from test_id2 where id=10 lock in share mode
+>
+> select * from test_id2 where id=10 lock for update
+>
+> delete from test_id2 where id=10;
+>
+> update test_id2 set  refId=12 where id=10;
+>
+> insert into test_id2 (refId) value (12);
+
+为什么上面例子中delete/update/insert都使用了当前读呢，因为delete/update都需要先根据后面的where条件做一次select操作并执行X Lock，所以肯定有当前读的操作了。由于主键或者unique index，或者外键约束所以insert也会触发当前读；
+
+
+
+## 5.事务隔离级别
+
+### Read Uncommited&脏读
+
+读未提交，就是一个事务可以读取到另外一个事务没有commit的数据修改，有可能另外这个事务修改的数据会rollback，所以第一个事务读取的值压根就是不存在的，所以产生了脏读；一般很少使用该隔离级别。
+
+### Read Commited&不可重复读
+
+读已提交，oracle/ms sql的默认隔离级别，一个事务只能读取另外一个事务已经提交的修改，如果另外一个事务还在执行中，他读取应该前一个snapshot，就是另外一个事务修改数据之前的快照；但是在提交之后，再读取，snapshot也更新了，读取到了修改后的值，所以到这里第一个事务两次读取是不一致的，所以就产生了不可重复读，同样在Read Commited也会产生该不可重复读；
+
+### Repeatable Read&幻读
+
+可重复读取，mysql的默认隔离级别，mysql/oracle/ms sql如果在不是用读行锁的形式，两次读取中的第二次都是使用的在该事务环境下第一次读取的snapshot的快照，这样就做到可重复读取了。但是如果在使用select for update/select lock in share mode这种当前读，而不是快照读了，oracle/ms sql在其他事务有insert的场景下就不能保证可重复读了，而mysql使用了一个间隙锁算法(gap lock，后续会讲到)也保证了在这种模式下也能保证可重复读，其实幻读就是不可重复读的一种特例子，我的理解就是在这种当前读的模式下还有不重复读取的现象就叫幻读；
+
+### Serializable
+
+串行化，这个隔离级别是最高的，并发也是最弱的，其他事务隔离级别中的一般快照读(select * from test_id2)都会被编程带S锁当前读，不会有脏读，也不会有不重复读，也不会有幻读，整个都串行化。
+
+
+
+## 6.锁算法
+
 待续
