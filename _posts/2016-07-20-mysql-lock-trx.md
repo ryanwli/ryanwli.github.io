@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Mysql之锁"
+title:      "Mysql之锁与事务"
 subtitle:   "该文章总结Mysql并发处理中使用到的事务和锁的概念，以及实践Demo支撑概念"
 date:       2016-07-20 12:00:00
 author:     "ryan"
