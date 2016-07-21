@@ -8,7 +8,7 @@
 
 在了解Mysql Innodb锁之前，我们先来了解Mysql Innodb的表的存储方式。Mysql Innodb中的表都是索引表，索引表的意思就是他的数据存储是按照主键索引的顺序存书的，找到主键ID就找到了该行数据，就算没有显示设定主键，Innodb也会给你找个唯一列来作为主键索引，就算找不到也会给你自动生成一列，说完这个，我们来看看表数据是怎么存储的，看下图：
 
-![20160721_7_tablespace](/Users/ryan/Documents/git/ryanwli.github.io/img/2016/20160721_7_tablespace.png)
+![20160721_7_tablespace](../img/2016/20160721_7_tablespace.png)
 
 脑子里面要有这个结构，后学，我们说锁的类型的时候会联想到该图；
 
