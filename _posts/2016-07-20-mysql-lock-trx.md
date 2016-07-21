@@ -19,7 +19,7 @@ header-img: "img/post-bg-06.jpg"
 
 在了解Mysql Innodb锁之前，我们先来了解Mysql Innodb的表的存储方式。Mysql Innodb中的表都是索引表，索引表的意思就是他的数据存储是按照主键索引的顺序存书的，找到主键ID就找到了该行数据，就算没有显示设定主键，Innodb也会给你找个唯一列来作为主键索引，就算找不到也会给你自动生成一列，说完这个，我们来看看表数据是怎么存储的，看下图：
 
-![20160721_7_tablespace](../img/2016/20160721_7_tablespace.png)
+![20160721_7_tablespace](https://ryanwli.github.io/img/2016/20160721_7_tablespace.png)
 
 脑子里面要有这个结构，后学，我们说锁的类型的时候会联想到该图；
 
@@ -36,15 +36,15 @@ header-img: "img/post-bg-06.jpg"
 |  S   |  兼   |  不兼  |  兼   |  不兼  |
 |  X   |  不兼  |  不兼  |  不兼  |  不兼  |
 
-S锁：
+### S锁：
 
 实际例子，一个事务里面使用了select lock in share mode(S锁)，那么其他事务里面用lock in share mode可以获取数据，但是如果使用select from for update, delete, update, insert这些写锁操作相同资源都会被block，不兼容；
 
-X锁：
+### X锁：
 
 实际例子，一个事务里面使用了select from for update(S锁), 那么其他事务里面使用select from for update, select lock in share mode, delete, update, insert这些写锁操作相同资源都会被block，所有都不兼容；
 
-IS和IX锁：
+### IS和IX锁：
 
 这个其实算事一个过程锁，之前我们描绘了表的结构组成，是一层一层包到行级别的，如果我们对该表中一行上了一个行级X锁，那么innodb会从内到外，在页/区/段/表都加上IX锁。在innodb中，我们只有能操作到表锁和行级锁，不能操作页/区/段锁，这个还是举一个实际例子，一个事务使用了select for update锁住了A表的一行数据，这时给A表也套上了IX锁，如果另外一个事务正在执行alter的改表操作，该操作会导致给表加一个S锁，S锁和之前select for update套的IX锁是不兼容的，所以这个时候改表就会等待；
 
@@ -61,6 +61,8 @@ IS和IX锁：
 > TRX2:
 >
 > ALTER TABLE test_id2 MODIFY refId bigint;
+
+
 
 
 
