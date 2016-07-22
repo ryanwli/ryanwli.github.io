@@ -42,7 +42,7 @@ header-img: "img/post-bg-06.jpg"
 
 ### X锁：
 
-实际例子，一个事务里面使用了select from for update(S锁), 那么其他事务里面使用select from for update, select lock in share mode, delete, update, insert这些写锁操作相同资源都会被block，所有都不兼容；
+实际例子，一个事务里面使用了select from for update(X锁), 那么其他事务里面使用select from for update, select lock in share mode, delete, update, insert这些写锁操作相同资源都会被block，所有都不兼容；
 
 ### IS和IX锁：
 
@@ -115,5 +115,111 @@ Current read直译过来就是当前读，我们在事务中执行S和X锁定，
 
 
 ## 6.锁算法
+
+### Record Lock
+
+单行上锁，该锁算法用RR隔离级别的主键或者Unique Index索引锁定上面，以及用在RC/RU隔离级别的任何索引锁定上面；
+
+### Gap Lock
+
+间隙锁，该算法锁定的是Index的一个区间，用来解决RR隔离级别锁定情况下，插入数据导致的幻读现象，这种加锁方式在MS SQL/ORACLE不用的，所以MS SQL/ORACLE在RR隔离级别会出现幻读的现象；是否Mysql这种间隙锁就十分好呢，其实他牺牲了一些插入数据的并发性的，但是对于大部分应用都是读多写少的，这种并发性影响是值得的（这里先把话放在这里，后面会阐述，并用DEMO演示）；
+
+### Next-Key Lock/Previous-Key Lock
+
+锁定一个间隙，并锁定当前行，其实就是Gap Lock+Record Lock的算法；假如我们有下面这个表：
+
+| Id(Cluster-Index) | Ref_Id(No-Cluster-Index) |
+| :---------------: | :----------------------: |
+|         1         |            1             |
+|         2         |            4             |
+|         3         |            7             |
+
+> 例：Trx1(RR)
+>
+> select * from table where Ref_Id=4 for update;
+>
+> 这里会用到Previous-Key Lock，所以会锁定的区间为：[1,4),[4,7);
+
+
+
+> 例：Trx2(RR)
+>
+> insert into table (Ref_Id) value (1); block
+>
+> insert into table (Ref_Id) value (2); block
+>
+> insert into table (Ref_Id) value (3); block
+>
+> insert into table (Ref_Id) value (4); block
+>
+> insert into table (Ref_Id) value (5); block
+>
+> insert into table (Ref_Id) value (6); block
+>
+> insert into table (Ref_Id) value (7); ok
+>
+> insert into table (Ref_Id) value (0); ok
+
+这里就凸显了我刚才说的插入的并发性了，为什么我lock住的Ref_Id=4的这行数据，而且只有一行数据，为什么不让我插入1,2,3,5,6，最多block 4呀，所以这个是gap lock缺陷(虽然影响不大，但我相信以后的InnoDB版本会优化该问题)，但是为什么要这样加锁，后面我会继续解释；
+
+> 例：Trx3(RR)
+>
+> select * from table where Ref_Id=1 for update; ok
+
+注意上面的区间[1,4)，按Pre-Key Lock的算法，这里加的X锁，为什么还能读取，官方给了这个解释：
+
+> Gap locks in `InnoDB` are “purely inhibitive”, which means they only stop other transactions from inserting to the gap. They do not prevent different transactions from taking gap locks on the same gap. Thus, a gap X-lock has the same effect as a gap S-lock.
+>
+> 译
+>
+> InnoDB中的间隙锁有比较明确的抑制性，意思就是说：他们仅仅阻止别的事务插入该间隙。他们并不会阻止不同的事务在相同的间隙获取锁，因此间隙读锁和间隙写锁有相同的影响。
+
+InnoDB是很有必要做这个优化，如果不做，读的并发性都会减弱，而大部分的基于数据库的系统都是读多写少的；
+
+> 例：Trx1(RR)
+>
+> select * from table where Ref_Id < 3 for update
+>
+> 这里会用到Gap-Key Lock，所以会锁定的区间为：(-∞,3);
+>
+> 例：Trx2(RR)
+>
+> insert into table (Ref_Id) value (2); block
+>
+> insert into table (Ref_Id) value (3); ok
+
+我们试想如果没有(-∞,3)区间锁，那么让2插入进去，这个就会导致在RR隔离级别出现第一次执行Ref_Id<3和第二次执行的Ref_Id<3的结果不一致，第一次是只有1，第二次就变成了1和2了，这就出现了在加锁的情况下也出现不重复读，违背RR隔离级别，在个隔离级别的不重复读Mysql定义为幻读，所以这个就是Gap Lock存在的价值；
+
+
+
+## 7.实战演练
+
+有了上面的背景知识我们来演练一下，有如下表：
+
+|  Id  | Name  | Ref_Id |
+| :--: | :---: | :----: |
+|  1   | Ryan  |   1    |
+|  2   | Jimmy |   4    |
+|  3   |  Tom  |   7    |
+
+> select * from table where id=1
+>
+> update table set Name='sfa' where Ref_Id=3
+
+这两个简单语句会加什么锁定？有人肯定会说，这还不简单，第一句没有锁，直接快照读，第二句，加的是Pre-Lock Key。如果是这样回答就太片面了，因为你缺少了上下文，这些语句究竟执行在那些隔离级别，Ref_Id是否建立的索引，Id是否为主键？所以呢已经先要确定上下文，我们才能知道他怎么加锁的；这里假如Id加了自增长主键，Name没有索引，Ref_Id有一个非唯一的索引，这个时候我们就需要考虑在4个隔离级别下面他们是怎么加锁的了；
+
+### RU：
+
+待续
+
+### RC：
+
+待续
+
+### RR：
+
+待续
+
+### S：
 
 待续
