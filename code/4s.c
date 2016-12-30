@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+//answer a
 typedef struct {
 	
 	int id;
@@ -9,7 +10,7 @@ typedef struct {
 	char* addrs[];
 } account;
 
-//
+//answer b
 int listMatchAccounts(char* addr, account allAccounts[], int numOfAccounts)
 {
 	int matchCount = 0;
@@ -40,4 +41,13 @@ int main(int argc, char const *argv[])
  
 	return 0;
 };
+
+//answer c, research in google to find answer...
+
+//print out--------------------
+/**
+name:ryan, address:chengdu
+name:jack, address:chengdu
+total records:2
+**/
 
