@@ -69,7 +69,7 @@ docker容器，为了避免直接使用镜像而破坏了原有镜像，而使�
 - Linux 3.8以上内核；
 - 存储驱动，一般为Device Mapper，实现多个虚拟逻辑磁盘与物理磁盘的映射；
 - 内核必须支持并开启cgroup，该功能实现了将linux系统中进程进行按容器分组；
-- 内核必须支持并开启namespace功能；
+- 内核必须支持并开启namespace功能，该用能用来抽象隔离系统资源的，如文件系统，网络访问等等；
 
 这些前置环境在官方的centos安装好后都是配置好的，只需要检查一下；
 
@@ -355,7 +355,7 @@ target     prot opt source               destination
 MASQUERADE  all  --  172.18.0.0/16        anywhere
 ```
 
-容器对外网的请求，会先通过基于docker0网桥的虚拟网络，到达网关docker0，然后就会查宿主机的路由表，然后返现上面这条路由信息，该信息告诉该包应该将在docker0网络的地址转成宿主机器的公网地址；这样，在外网看来就是该宿主机发起的请求，隐藏的内网的docker容器；
+容器对外网的请求，会先通过基于docker0网桥的虚拟网络，到达网关docker0，然后就会查宿主机的路由表，然后发现上面这条路由信息，该信息做了一个SNAT操作，告诉该包应该将在docker0网络的源地址转成宿主机器的公网地址；这样，在外网看来就是该宿主机发起的请求，隐藏的内网的docker容器；
 
 
 
@@ -371,10 +371,12 @@ Device Mapper: http://www.ibm.com/developerworks/cn/linux/l-devmapper/
 
 cgroup: http://www.ibm.com/developerworks/cn/linux/1506_cgroup/index.html
 
-namespace: 
+namespace: https://en.wikipedia.org/wiki/Linux_namespaces
 
 unix domain socket: https://en.wikipedia.org/wiki/Unix_domain_socket
 
-docker command: 
+docker command: https://docs.docker.com/engine/reference/commandline/
 
-dockerfile command: 
+docker run command: https://docs.docker.com/engine/reference/run/
+
+dockerfile command: https://docs.docker.com/engine/reference/builder/
