@@ -380,3 +380,32 @@ MASQUERADE  all  --  172.18.0.0/16        anywhere
 8.6 docker run command: https://docs.docker.com/engine/reference/run/
 
 8.7 dockerfile command: https://docs.docker.com/engine/reference/builder/
+
+
+
+# 9.公司私有镜像
+
+我已经提前给大家做好了，我们开发需要的所有镜像，直接就可以上手用，如下：
+
+```shell
+oracle:
+docker run -d -h orcl-server --shm-size=2048m -p 1521:1521 -v /mnt1/data/oracle/fast_recovery_area:/mnt/data/oracle/fast_recovery_area -v /mnt1/data/oracle/oradata:/mnt/data/oracle/oradata 192.168.2.230:5000/sunyuki/oraclelinux:latest
+
+mysql:
+docker run -d -h mysql-server -p 3306:3306 -v /mnt1/data/mysql:/mnt/data/mysql-online 192.168.2.230:5000/sunyuki/mysqllinux:latest
+
+redis:
+docker run -d -h redis-server -v /mnt1/data/redis:/mnt/data/redis 192.168.2.230:5000/sunyuki/redis:latest
+
+mongo-server:
+docker run -d -h mongo-server -p 27017:27017 -v /mnt1/data/mongodb:/mnt/data/mongodb 192.168.2.230:5000/sunyuki/mongodb:latest
+
+java:
+docker run -d -h webapi01 -e "exec=-server -Xmx512M -Djava.awt.headless=true -cp sunyuki-web-api-0.0.1.jar::libs/* com.sunyuki.ec.web.api.Application --server.port=8081" -p 8081:8081 -v /mnt1/app/sunyuki-ec-webapi-0.0.1-1:/mnt/app/workdir  192.168.2.230:5000/sunyuki/javalinux:1.2;
+
+openresty:
+docker run -d -h openresty -p 8080:8080 -v /mnt1/app/openresty:/mnt/app/workdir  192.168.2.230:5000/sunyuki/openresty:latest;
+
+rabbitmq:
+docker run -d -h rabbitmq-server -p 5672:5672 -p 15672:15672 -v /mnt1/data/rabbitmq:/mnt/data/rabbitmq  192.168.2.230:5000/sunyuki/rabbitmq:latest;
+```
