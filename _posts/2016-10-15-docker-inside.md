@@ -67,9 +67,9 @@ docker容器，为了避免直接使用镜像而破坏了原有镜像，而使�
 
 - 64位CPU；
 - Linux 3.8以上内核；
-- 存储驱动，一般为Device Mapper，实现多个虚拟逻辑磁盘与物理磁盘的映射；
-- 内核必须支持并开启cgroup，该功能实现了将linux系统中进程进行按容器分组；
-- 内核必须支持并开启namespace功能，该用能用来抽象隔离系统资源的，如文件系统，网络访问等等；
+- 存储驱动，一般为Device Mapper，实现多个虚拟逻辑磁盘与物理磁盘的映射[8.1]；
+- 内核必须支持并开启cgroup，该功能实现了将linux系统中进程进行按容器分组[8.2]；
+- 内核必须支持并开启namespace功能，该用能用来抽象隔离系统资源的，如文件系统，网络访问等等[8.3]；
 
 这些前置环境在官方的centos安装好后都是配置好的，只需要检查一下；
 
@@ -113,7 +113,7 @@ $ chkconfig --level 2345 docker on
 
 上一小节说道的dockerd就是图中守护进程，它复制控制守护进程宿主机中的Docker容器，并提供docker客户端的远程连接；老的版本中docker客户端和守护进程的连接没有认证机制的，所以一般都没有开放远程，或者使用iptables进行访问控制；
 
-直接启动dockerd模式使用的是Unix Domain Socket[9.4]进行宿主机器内的跨进程通信;
+直接启动dockerd模式使用的是Unix Domain Socket[8.4]进行宿主机器内的跨进程通信;
 
 当然也可以启用跨网络的docker客户端到服务端守护dockerd的通信，那就需要我们3.2中配置的/etc/sysconfig/docker中的other_args='-H tcp://0.0.0.0:4200'中的配置；客户端连接的时候需要带上host参数，如下：
 
@@ -244,7 +244,7 @@ ENTRYPOINT：在从该镜像启动的容器，会自动先运行后面的语句�
 
 docker build -t命令：执行dockerfile的批处理并commit成镜像；
 
-dockerfile批处理文件中还有许多其他的命令，它可以让你写一个批处理脚本就可以完成装箱和封箱的操作，在devOps中dockerfile极其的有用；更多的dockerfile命令，请参见后面的文档链接[9.6]；
+dockerfile批处理文件中还有许多其他的命令，它可以让你写一个批处理脚本就可以完成装箱和封箱的操作，在devOps中dockerfile极其的有用；更多的dockerfile命令，请参见后面的文档链接[8.7]；
 
 ### 5.3 share
 
@@ -367,16 +367,16 @@ MASQUERADE  all  --  172.18.0.0/16        anywhere
 
 # 8.参考文献：
 
-Device Mapper: http://www.ibm.com/developerworks/cn/linux/l-devmapper/
+8.1 Device Mapper: http://www.ibm.com/developerworks/cn/linux/l-devmapper/
 
-cgroup: http://www.ibm.com/developerworks/cn/linux/1506_cgroup/index.html
+8.2 cgroup: http://www.ibm.com/developerworks/cn/linux/1506_cgroup/index.html
 
-namespace: https://en.wikipedia.org/wiki/Linux_namespaces
+8.3 namespace: https://en.wikipedia.org/wiki/Linux_namespaces
 
-unix domain socket: https://en.wikipedia.org/wiki/Unix_domain_socket
+8.4 unix domain socket: https://en.wikipedia.org/wiki/Unix_domain_socket
 
-docker command: https://docs.docker.com/engine/reference/commandline/
+8.5 docker command: https://docs.docker.com/engine/reference/commandline/
 
-docker run command: https://docs.docker.com/engine/reference/run/
+8.6 docker run command: https://docs.docker.com/engine/reference/run/
 
-dockerfile command: https://docs.docker.com/engine/reference/builder/
+8.7 dockerfile command: https://docs.docker.com/engine/reference/builder/
