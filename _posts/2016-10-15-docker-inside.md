@@ -35,7 +35,7 @@ docker在近2年都非常炙手可热，为了推进公司技术前进以及储�
 
 # 2.docker
 
-![what_is_docker](https://ryanwli.github.io/img/2016/2016128_what_is_docker.png)
+![what_is_docker](https://ryanwli.github.io/img/2016/20161228_what_is_docker.png)
 
 ### 2.1 docker命令&服务程序
 
@@ -109,7 +109,7 @@ $ chkconfig --level 2345 docker on
 
 ### 3.3 Docker的C/S架构
 
-![docker_cs_art](https://ryanwli.github.io/img/2016/2016128_docker_cs_art.png)
+![docker_cs_art](https://ryanwli.github.io/img/2016/20161228_docker_cs_art.png)
 
 上一小节说道的dockerd就是图中守护进程，它复制控制守护进程宿主机中的Docker容器，并提供docker客户端的远程连接；老的版本中docker客户端和守护进程的连接没有认证机制的，所以一般都没有开放远程，或者使用iptables进行访问控制；
 
@@ -289,7 +289,7 @@ veth5464b87: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
 
 上面的信息，除了docker0这个网桥以外，还有veth*的两个虚拟接口，它和容器是成对存在的，可以把它理解成宿主机连接容器的虚拟网线，如下图：
 
-![docker_network](https://ryanwli.github.io/img/2016/2016128_docker_network.png)
+![docker_network](https://ryanwli.github.io/img/2016/20161228_docker_network.png)
 
 这样，不光实现了容器和宿主机的通信，而且还实现了容器与容器之间通信；
 
