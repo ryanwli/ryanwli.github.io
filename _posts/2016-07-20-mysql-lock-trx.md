@@ -106,7 +106,7 @@ Current read直译过来就是当前读，我们在事务中执行S和X锁定，
 
 ### Repeatable Read&幻读
 
-可重复读取，mysql的默认隔离级别，mysql/oracle/ms sql如果在不是用读行锁的形式，两次读取中的第二次都是使用的在该事务环境下第一次读取的snapshot的快照，这样就做到可重复读取了。但是如果在使用select for update/select lock in share mode这种当前读，而不是快照读了，oracle/ms sql在其他事务有insert的场景下就不能保证可重复读了，而mysql使用了一个间隙锁算法(gap lock，后续会讲到)也保证了在这种模式下也能保证可重复读，其实幻读就是不可重复读的一种特例子，我的理解就是在这种当前读的模式下还有不重复读取的现象就叫幻读；
+可重复读取，mysql的默认隔离级别，mysql/oracle/ms sql如果在不是用读行锁的形式，两次读取中的第二次都是使用的在该事务环境下第一次读取的snapshot的快照，这样就做到可重复读取了。但是如果在使用select for update/select lock in share mode这种当前读，而不是快照读了，oracle/ms sql在其他事务有insert的场景下就不能保证可重复读了，而mysql使用了一个间隙锁算法(gap lock，后续会讲到)也保证了在这种模式下也能保证可重复读，其实幻读就是不可重复读的一种特例子，我的理解的幻读是，当前事务第一次和第二次范围读值之间，有另外一个事务在该范围中进行了插入，导致当前事务两次读取到的数据行不一致，导致了幻读；当select不加读锁或者写锁的时候，MYSQL/ORACLE/MSSQL都是保证在REPEATABLE READ隔离级别下不存在幻读，但是如果加了读锁或者写锁，系统走的不是MVCC快照版本了，是对非快照数据原始存储地方进行加锁，只有MYSQL Innodb/XtraDB利用GAP LOCK(间隙锁)来保证了不会出现幻读，但是其他数据还是没有保证。
 
 ### Serializable
 
