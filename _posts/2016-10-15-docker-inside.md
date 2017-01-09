@@ -55,7 +55,7 @@ docker容器，为了避免直接使用镜像而破坏了原有镜像，而使�
 
 除了PRD使用该技术外，我们本地开发也可以使用，比如，我只想临时使用centos6的一个版本测试一下某几个程序，我只需要从一个centos6的镜像运行一个容器，安装测试完后删除容器就可以了；然后我原本的操作系统没有更多清除动作，方便高效；
 
-拿我自己的话来说，自从有了docker，我再也不担心，领导说我们再需要几台oracle server了，因为oracle server在Linux无界面安装真的很恼人，很多依赖需要安装；现在，我只需要一句docker run命令就可以去做别的事情，直等到docker container启动起来，我就可以使用oracle server了；
+拿我自己的话来说，自从有了docker，我再也不担心，需求说我们再需要几台oracle server了，因为oracle server在Linux无界面安装真的很恼人，很多依赖需要安装；现在，我只需要一句docker run命令就可以去做别的事情，直等到docker container启动起来，我就可以使用oracle server了；
 
 
 
@@ -218,6 +218,8 @@ commit后面带上需要制作成镜像的Id，以及需要上传服务器IP和P
 
 ### 5.2 dockerfile
 
+#### 5.2.1 使用
+
 dockerfile是构建镜像的一个批量处理文档，我们还是给一个实例代码来演示如何使用这个dockerfile的：
 
 ```shell
@@ -245,6 +247,16 @@ ENTRYPOINT：在从该镜像启动的容器，会自动先运行后面的语句�
 docker build -t命令：执行dockerfile的批处理并commit成镜像；
 
 dockerfile批处理文件中还有许多其他的命令，它可以让你写一个批处理脚本就可以完成装箱和封箱的操作，在devOps中dockerfile极其的有用；更多的dockerfile命令，请参见后面的文档链接[8.7]；
+
+#### 5.2.2 镜像分层架构
+
+dockerfile中的每一个命令都会产生一个镜像快照层，每次docker build执行命令是相同的，他会使用相同的快照，而不会去重新创建一层相同的快照。快照层的生成是基于Copy On Write的，意思就是只有每行命令影响到的文件才会产生快照数据。这种快照技术在创建容器的时候，会共享这些快照层，意思就是这些快照数据会被mount到容器里面，只能读，不能写操作（就算你删除了mount的文件，其实系统会显示血红色，表示未被真正从物理磁盘删除，因为还有另外地方在使用），只有容器里面自己产生的数据才会由当前容器自由的写操作。这个技术叫docker的镜像分层架构。下图可以说明容器中这种镜像分层架构：
+
+![20171228_docker_images](https://ryanwli.github.io/img/2016/20171228_docker_images.png)
+
+
+
+
 
 ### 5.3 share
 
