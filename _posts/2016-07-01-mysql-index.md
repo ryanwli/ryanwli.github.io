@@ -18,7 +18,7 @@ header-img: "img/post-bg-06.jpg"
 BTree索引在我们MySql的Innodb中使用的是最多的索引类型，我们一般说的索引就是BTree类型的索引。BTree的全称是Binary Tree，就是我们熟悉的二叉树数据结构；下面我们就用一张图来说明一下BTree在MySql的工作原理；
 ![图1，非聚族索引](http://upload-images.jianshu.io/upload_images/16597-21ae5cbf2528963a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-###2.2 Hash索引
+### 2.2 Hash索引
 Hash索引我们用的不是特别多，但是在某些场景下我们选择Hash索引可能更适用一点儿，我们还是先用一张图来看一下Hash索引在Mysql里面的工作原理，他工作原理和Java中的HashMap有些类似：
 ![图2，Hash索引](http://upload-images.jianshu.io/upload_images/16597-fae4b1ab4d6610d3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
