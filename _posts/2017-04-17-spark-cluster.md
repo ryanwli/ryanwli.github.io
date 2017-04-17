@@ -17,7 +17,7 @@ header-img: "img/post-bg-01.jpg"
 
 在Spark集群中，有一个节点来协调其他节点的操作，该节点为“驱动器节点”，而其他节点就是“执行器节点”，从名字大概可以了解他们的作用了，先来看一下架构图：
 
-![2017-04-17-spark-runtime-arch](/Users/ryan/Documents/git/ryanwli.github.io/img/2017/2017-04-17-spark-runtime-arch.png)
+![2017-04-17-spark-runtime-arch](//ryanwli.github.io/img/2017/2017-04-17-spark-runtime-arch.png)
 
 之前第一篇写的独立驱动程序就是在Spark驱动器节点执行，分析出需要多少任务，然后分发给其他执行器节点进行执行。他们之间的协作需要有一个集群管理器来做，Spark内部提供Standalone进群管理器，也可以使用如Hadoop Yarn，以及Apache Mesos来做管理都可以；
 
@@ -33,7 +33,7 @@ header-img: "img/post-bg-01.jpg"
 
 我们再来看看上篇那张图：
 
-![2017-04-13-spark-hdfs-partition](/Users/ryan/Documents/git/ryanwli.github.io/img/2017/2017-04-13-spark-hdfs-partition.png)
+![2017-04-13-spark-hdfs-partition](//ryanwli.github.io/img/2017/2017-04-13-spark-hdfs-partition.png)
 
 这张是Spark读取Hdfs文件，进行并行处理的过来；task是spark的最小执行单元，驱动器节点，负责分析提交的程序，并产生若干task；一个task可能是一个RDD操作，也可能是多个RDD操作的合并(spark驱动器进行会进行优化合并，加快执行效率)；最后讲这些任务打包发送到集群里面，分给这些执行器节点进行执行生成RDD分区；这一过程是将我们写的程序逻辑处理流程(这个逻辑处理流程官方术语也叫DAG, Directed Acyclic Graph)转换为物理执行计划的过程；
 
