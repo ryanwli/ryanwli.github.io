@@ -2,9 +2,9 @@
 layout:     post
 title:      "Spark Inside(Cluster)"
 subtitle:   "(集群篇)Spark inside让普通开发人员可以通过该篇文档的学习可以快速上手Spark"
-date:       2017-04-05 12:30:00
+date:       2017-04-17 12:30:00
 author:     "ryan"
-header-img: "img/post-bg-02.jpg"
+header-img: "img/post-bg-01.jpg"
 ---
 
 # Digest
