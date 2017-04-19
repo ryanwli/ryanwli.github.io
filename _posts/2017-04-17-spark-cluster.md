@@ -57,6 +57,50 @@ header-img: "img/post-bg-01.jpg"
 
 ## 3.1 配置集群
 
+### 3.1.1 自动启动
+
+1. 将spark包放到每个集群节点里面去；
+2. 用ssh-keygen生成密匙，能让驱动器节点服务器能够无密码访问各个节点的服务器；
+3. 在驱动节点的conf/slave下面配置各个执行节点的ip或者hostname；
+4. 在驱动节点使用sbin/start-all.sh来实现自动启动，若要停止整个使用sbin/stop-all.sh；
+
+### 3.1.2 手动启动
+
+1. 将spark包放到每个集群节点里面去；
+2. 在每个执行节点的conf/spark-env.sh，配置SPARK_MASTER_IP；
+3. 使用bin/spark-class org.apache.spark.deploy.master.Master；
+4. 使用bin/spark-class org.apache.spark.deploy.worker.Woker spark://masterip:7077;
+
 ## 3.2 提交应用
 
+使用如下命令可以将Spark独立驱动程序提交到集群中去：
+
+```sh
+bin/spark-submit --master spark://masterip:7077 --class xx.xx.xx yourapp.jar
+```
+
+3.2.1 客户端部署模式
+
+上面使用的是默认的client模式进行提交驱动程序到集群，这个类似linux系统的中的前台交互执行，虽然这种模式也利用了spark集群，但是它的输入，输出都是在控制在进行，这就意味着你提交这个机器的网络和集群网络是内网，否者执行效率会大打折扣；
+
+3.2.2 集群部署模式
+
+还有一种方式是集群方式，命令如下：
+
+```sh
+bin/spark-submit --master spark://masterip:7077 --deploy-mode cluster --class xx.xx.xx yourapp.jar
+```
+
+这种方式是将驱动程序提交到集群中的某个执行器节点，然后再进行spark-submit操作，这样就肯定是再内网执行驱动程序的提交提高了执行效率，这种方式一般使用在产品环境，但是这种方式有一个条件，就是必须将yourapp.jar放到hdfs，或者在每台执行器节点都要放这个jar，否者会提示不能找到该jar的可能；
+
+
+
 ## 3.3 配置资源用量
+
+bin/spark-submit提交使用集群资源默认是，每个节点只能使用1G内存，但是CPU核心数默认就是无限；我们可以使用如下命令参数来设置该驱动程序所要使用的集群资源；
+
+```sh
+bin/spark-submit --master spark://masterip:7077 --executor-memory 2G --executor-cores 2 --total-executor-cores 10 --class xx.xx.xx yourapp.jar
+```
+
+一般一个执行节点，只会开启一个执行器进程，对于上面的配置，该执行器进行是一个JVM，声明的JVM队是2G，每个执行器进程启动2个工作线程执行并行处理，total-executor-cores说明该独立驱动程序在集群里面最多使用10个核数，所以该独立驱动程序组多被分配到5个执行节点服务器上面；
