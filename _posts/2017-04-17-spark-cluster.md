@@ -67,9 +67,20 @@ header-img: "img/post-bg-01.jpg"
 ### 3.1.2 手动启动
 
 1. 将spark包放到每个集群节点里面去；
+
 2. 在每个执行节点的conf/spark-env.sh，配置SPARK_MASTER_IP；
-3. 使用bin/spark-class org.apache.spark.deploy.master.Master；
-4. 使用bin/spark-class org.apache.spark.deploy.worker.Woker spark://masterip:7077;
+
+3. 启动驱动节点：
+
+   ```sh
+   bin/spark-class org.apache.spark.deploy.master.Master；
+   ```
+
+4. 启动执行节点：
+
+   ```shell
+   bin/spark-class org.apache.spark.deploy.worker.Woker spark://masterip:7077;
+   ```
 
 ## 3.2 提交应用
 
@@ -79,11 +90,11 @@ header-img: "img/post-bg-01.jpg"
 bin/spark-submit --master spark://masterip:7077 --class xx.xx.xx yourapp.jar
 ```
 
-3.2.1 客户端部署模式
+### 3.2.1 客户端部署模式
 
 上面使用的是默认的client模式进行提交驱动程序到集群，这个类似linux系统的中的前台交互执行，虽然这种模式也利用了spark集群，但是它的输入，输出都是在控制在进行，这就意味着你提交这个机器的网络和集群网络是内网，否者执行效率会大打折扣；
 
-3.2.2 集群部署模式
+### 3.2.2 集群部署模式
 
 还有一种方式是集群方式，命令如下：
 
