@@ -68,18 +68,16 @@ header-img: "img/post-bg-01.jpg"
 
 1. 将spark包放到每个集群节点里面去；
 
-2. 在每个执行节点的conf/spark-env.sh，配置SPARK_MASTER_IP；
-
-3. 启动驱动节点：
+2. 启动驱动节点：
 
    ```sh
    bin/spark-class org.apache.spark.deploy.master.Master；
    ```
 
-4. 启动执行节点：
+3. 启动执行节点：
 
    ```shell
-   bin/spark-class org.apache.spark.deploy.worker.Woker spark://masterip:7077;
+   bin/spark-class org.apache.spark.deploy.worker.Worker spark://masterip:7077;
    ```
 
 ## 3.2 提交应用
