@@ -61,8 +61,8 @@ header-img: "img/post-bg-01.jpg"
 
 1. 将spark包放到每个集群节点里面去；
 2. 用ssh-keygen生成密匙，能让驱动器节点服务器能够无密码访问各个节点的服务器；
-3. 在驱动节点的conf/slave下面配置各个执行节点的ip或者hostname；
-4. 在驱动节点使用sbin/start-all.sh来实现自动启动，若要停止整个使用sbin/stop-all.sh；
+3. 在master点的conf/slave下面配置各个执行节点的ip或者hostname；
+4. 在master点使用sbin/start-all.sh来实现自动启动，若要停止整个使用sbin/stop-all.sh；
 
 ### 3.1.2 手动启动
 
