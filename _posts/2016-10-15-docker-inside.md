@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Docker Inside Part 1"
+title:      "Docker Inside"
 subtitle:   "docker在近2年都非常炙手可热，为了推进公司技术前进以及储备，有了这篇docker的share文档，供愿意尝试docker的开发童鞋入门，后面我也会浅析一下docker如何工作的；抛砖引玉，让童鞋们快进入状态。"
 date:       2016-12-28 13:27:00
 author:     "ryan"
