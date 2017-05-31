@@ -1,7 +1,7 @@
 # Site settings
 title: Ryan's blog
 header-img: img/home-bg.jpg
-email: ryan.w.li@github.io
+email: ryan@sunyuki.com
 copyright_name: Ryanwli
 description: "clean code, clean life"
 baseurl: ""
@@ -9,9 +9,8 @@ url: "http://ryanwli.github.io"
 twitter_username: ryanwli
 github_username:  ryanwli
 facebook_username:  ryanwli
-email_username:  ryan.w.li@qq.com
+email_username:  ryan@sunyuki.com
 future: true
-timezone: Asia/Hong_Kong
 
 # Google Analytics
 # To enable google analytics, uncomment below line with a valid Google Tracking ID
