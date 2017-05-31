@@ -11,6 +11,7 @@ github_username:  ryanwli
 facebook_username:  ryanwli
 email_username:  ryan.w.li@qq.com
 future: true
+timezone: Asia/Hong_Kong
 
 # Google Analytics
 # To enable google analytics, uncomment below line with a valid Google Tracking ID
