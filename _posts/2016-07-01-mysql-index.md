@@ -15,10 +15,16 @@ header-img: "img/post-bg-06.jpg"
 对索引最简单的理解就是一本书的页码，可以通过书的目录（这个就相当于是数据库中的索引）对应的页码可以找到这页的所有内容。在这节中我们从MySql中索引类型来说一下数据库中的索引工作原理，从索引的数据结构算法上拆分，在MySql的Innodb存储引擎里面有两个类型，BTree和Hash类型索引，从索引顺序和整行数据物理顺序一致或不一致来区分的话，分为聚族(聚集)索引和非聚族(非聚集)索引。下面我们首先来说一下BTree和Hash类型。
 
 ### 2.1 BTree索引
-BTree索引在我们MySql的Innodb中使用的是最多的索引类型，我们一般说的索引就是BTree类型的索引。BTree的全称是Binary Tree，就是我们熟悉的二叉树数据结构；下面我们就用一张图来说明一下BTree在MySql的工作原理；
-![图1，非聚族索引](http://upload-images.jianshu.io/upload_images/16597-21ae5cbf2528963a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+BTree索引在我们MySql的Innodb中使用的是最多的索引类型，我们一般说的索引就是BTree类型的索引。BTree的全称是Balance Tree，中文名叫多路搜索树；下面我们就用一张图来说明一下BTree在MySql的工作原理；
+
+![图1，非聚族索引](https://ryanwli.github.io/img/2016/20160801-Non-Cluster-Index.jpg)
+
+虚线框代表一个Block块，红色代表本次查找的结果，这里以查询Zorro名为例，首先从硬盘拿第一层这个块，加在到内存中然后依次对名字进行比较，最后比较后没有找到，但是发现Petter后的Block Pointer还可以进行下一级查找，再将下一级的Block从硬盘加在到内存，重复刚才比较，最后就一直重复这个直到找到或者查找完毕都没有找到；
+
+这种多路搜索树的数据结构可以以极其少的内存空间，以及随机IO次数就可以找到我们想要的数据；
 
 ### 2.2 Hash索引
+
 Hash索引我们用的不是特别多，但是在某些场景下我们选择Hash索引可能更适用一点儿，我们还是先用一张图来看一下Hash索引在Mysql里面的工作原理，他工作原理和Java中的HashMap有些类似：
 ![图2，Hash索引](http://upload-images.jianshu.io/upload_images/16597-fae4b1ab4d6610d3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
@@ -33,13 +39,21 @@ Hash索引我们用的不是特别多，但是在某些场景下我们选择Hash
 
 ### 2.4 聚族索引
 聚族索引他的索引顺序和数据的存储顺序是一致的，可以理解成他们是在一起的，就像一本书的页码和该页码中的内容；通常我们一个表的主键就是聚族索引，如果一个表没有定义主键，那么MySql的Innodb会自动生成一个主键列，以及主键索引；另外在innodb中聚族索引是按顺序进行物理存储层面存数据的，所以建立聚族索引最好选择自增长的数字作为聚族索引，这样正好在每次最后一位索引值增加新的索引值，如果换成GUID列作为聚族索引，因为GUID是随即生成，并且无序的所以每次插入一行纪录的时候，创建聚族索引为了保证聚族索引的顺序，会去查找指定的顺序位置，产生额外的开销，另外GUID占用36位unicode字符串，不管是比较字符串，还是存储需要的长度都是开销挺大的，所以聚族索引优先选择整数列作为聚族索引；
-![图3，聚族索引](http://upload-images.jianshu.io/upload_images/16597-80283d09b8cfcfaf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+![图3，聚族索引](https://ryanwli.github.io/img/2016/20160801-Cluster-Index.jpg)
+
+
 
 ### 2.5 非聚族索引
+
 在一个表只有一个聚族索引，除开聚族索引，该表剩下的索引都是非聚族索引；非聚族索引是基于聚族索引的，这话怎么讲呢？看下图，我们在name上建立了一个BTree的非聚族索引，最终匹配到对应Name以后，该非聚族索引还存储了主键，我们使用主键再在聚族索引BTree找到真正对应的该Row的数据，所以非聚集索引还有另外一个称号叫“二级索引”；
-![图4，非聚族索引](http://upload-images.jianshu.io/upload_images/16597-21ae5cbf2528963a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+![图4，非聚族索引](https://ryanwli.github.io/img/2016/20160801-Non-Cluster-Index.jpg)
+
+
 
 # 3. MySql的执行计划
+
 由于下一节我们会用到执行计划来判断我们查询语句是否用了合理的索引，所以这节我们先来了解执行计划，首先我们来看一个很简单的执行计划：
 
 ![图5，执行计划](http://upload-images.jianshu.io/upload_images/16597-cc467aaae3d27f7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
