@@ -2,7 +2,7 @@
 layout:     post
 title:      "Hyperledger Fabric动态新加组织"
 subtitle:   "此篇文章介绍了如何在已经存在的hyperledger fabric联盟链中加入新组织，目前fabric1.1的版本还是比较繁琐的，这里写下来以备以后使用"
-date:       2016-06-20 12:00:00
+date:       2018-06-20 12:00:00
 author:     "ryan"
 header-img: "img/post-bg-02.jpg"
 ---
