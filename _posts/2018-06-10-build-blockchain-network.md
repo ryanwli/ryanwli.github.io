@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "使用Fabric1.1搭建一个联盟网络"
-subtitle:   "在这篇文章中将介绍如果基于k8s搭建一个联盟链网络"
+subtitle:   "在这篇文章中将介绍如果基于k8s搭建一个联盟链步骤"
 date:       2018-06-10 12:00:00
 author:     "ryan"
 header-img: "img/post-bg-03.jpg"
@@ -215,6 +215,8 @@ configtxgen -profile OrgsChannel -outputAnchorPeersUpdate ./PeerOrg3MSPanchors.t
 
 
 ## 3.2 准备K8S相关文件
+
+K8S的测试环境需要自己搭建的一个DNS服务器，并把对应的orderer/peer节点的域名解析到对应Cluster IP
 
 #### 3.2.1 准备Orderder的Pod文件：
 
