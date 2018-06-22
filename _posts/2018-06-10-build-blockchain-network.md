@@ -17,13 +17,13 @@ header-img: "img/post-bg-03.jpg"
 
 ## 2.1 测试环境的物理部署
 
-![build-union-blockchain-01](/Users/ryan.w.li/Documents/ryan/git/ryanwli.github.io/img/2018/build-union-blockchain-01.jpg)
+![build-union-blockchain-01](https://ryanwli.github.io/img/2018/build-union-blockchain-01.jpg)
 
 这个部署只是一个简单的在测试环境的一个部署方案，当然在实际的产品环境中，肯定不可能所有组织都在一个k8s内网体系中，一个org肯定就是一个自己大的内网，通过公共的kafka集群来完成区块的顺序生成的共识，而且kafka Cluster也不会都在一个服务器上，这里仅仅演示。
 
 ## 2.2 真实环境的逻辑部署图：
 
-![build-union-blockchain-02](/Users/ryan.w.li/Documents/ryan/git/ryanwli.github.io/img/2018/build-union-blockchain-02.jpg)
+![build-union-blockchain-02](https://ryanwli.github.io/img/2018/build-union-blockchain-02.jpg)
 
 
 
