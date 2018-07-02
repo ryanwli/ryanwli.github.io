@@ -129,7 +129,7 @@ export CHANNEL_UPDATED_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/s
 peer channel update -f $CHANNEL_UPDATED_FILE -o orderer.mysample.com:7050 -c mychannel --tls --cafile $ORDER_CA_FILE
 ```
 
-> 注意：这里的例子是联盟链中只有1个组织的情况下，直接使用peer channel update就可以了，如果是2个以上的组织，在更新之前，还需要其他组织对这次的更新内容进行签名，执行命令如下：
+> 注意：这里的例子是联盟链中只有1个组织的情况下，直接使用peer channel update就可以了(该命令会自动签名并更新)，如果是2个以上的组织，在更新之前，还需要其他组织对这次的更新内容进行签名，执行命令如下：
 
 ```bash
 #这里如果有需要的话，要切换到当前签名组织的环境变量
