@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Hyperledger Fabric动态新加组织"
+title:      "Fabric1.1动态新加组织"
 subtitle:   "此篇文章介绍了如何在已经存在的hyperledger fabric联盟链中加入新组织，目前fabric1.1的版本还是比较繁琐的，这里写下来以备以后使用"
 date:       2018-06-20 12:00:00
 author:     "ryan"
@@ -88,11 +88,11 @@ curl -X POST --data-binary @config_block.pb http://127.0.0.1:7059/protolator/dec
 jq .data.data[0].payload.data.config config_block.json > config.json
 ```
 
-2.9 将2.5生成的org2的json放到config.json适合的位置，并保存成update_config.json，如下：
+2.9 将2.5生成的org2的json放到config.json适合的位置，并保存成updated_config.json，如下：
 
 ![add-new-org-01](https://ryanwli.github.io/img/2018/add-new-org-01.png)
 
-2.10 将config.json和编辑后的update_config.json转成pb格式的文件，并计算出差异生成待更新的pb文件：
+2.10 将config.json和编辑后的updated_config.json转成pb格式的文件，并计算出差异生成待更新的pb文件：
 
 ```bash
 #config.json转config.pb
@@ -127,6 +127,24 @@ export ORDER_CA_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/o
 export CHANNEL_UPDATED_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/config_update_as_envelope.pb
 #更新配置现有的通道
 peer channel update -f $CHANNEL_UPDATED_FILE -o orderer.mysample.com:7050 -c mychannel --tls --cafile $ORDER_CA_FILE
+```
+
+> 注意：这里的例子是联盟链中只有1个组织的情况下，直接使用peer channel update就可以了，如果是2个以上的组织，在更新之前，还需要其他组织对这次的更新内容进行签名，执行命令如下：
+
+```bash
+#这里如果有需要的话，要切换到当前签名组织的环境变量
+#CORE_PEER_TLS_ROOTCERT_FILE
+#CORE_PEER_TLS_KEY_FILE
+#CORE_PEER_LOCALMSPID
+#CORE_PEER_TLS_CERT_FILE
+#CORE_PEER_TLS_ENABLED
+#CORE_PEER_MSPCONFIGPATH
+#设置orderer节点的CA的文件路径(路径根据自己的部署结构来)
+export ORDER_CA_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/mysample.com/orderers/orderer.mysample.com/msp/tlscacerts/tlsca.mysample.com-cert.pem
+#设置待更新的channel配置文件
+export CHANNEL_UPDATED_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/config_update_as_envelope.pb
+#签名配置现有的通道
+peer channel signconfigtx -f $CHANNEL_UPDATED_FILE -o orderer.example.com:7050 --tls --cafile $ORDER_CA_FILE
 ```
 
 2.13 启动部署新组织org2的peer节点，把对应的msp，以及tls拷贝到部署节点进行部署，然后安装链码到对应的peer节点(使用新版本)，这里部署细节就不多述(不清楚看我之前搭建联盟链的文章，链接待加)；
