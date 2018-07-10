@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Fabric1.1搭建一个联盟网络"
+title:      "Fabric1.1搭建联盟链网络"
 subtitle:   "在这篇文章中将介绍如果基于k8s搭建一个联盟链步骤"
 date:       2018-06-10 12:00:00
 author:     "ryan"
