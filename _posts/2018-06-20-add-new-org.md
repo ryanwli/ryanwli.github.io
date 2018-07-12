@@ -147,7 +147,22 @@ export CHANNEL_UPDATED_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/s
 peer channel signconfigtx -f $CHANNEL_UPDATED_FILE -o orderer.example.com:7050 --tls --cafile $ORDER_CA_FILE
 ```
 
+> 另外，上面我们只修改了Channel中Application中的Peer的配置，所以只需要在这个Application中已存在的Peer节点进行签名就可以了，下面是引用官方文档一部分，主要说的是如果需要修改channel里面的其他一些配置，这些配置需要哪些签名节点来对这个config_update_as_envelope.pb进行签名。
+>
+> Once you’ve successfully generated the protobuf file, it’s time to get it signed. To do this, you need to know the relevant policy for whatever it is you’re trying to change.
+>
+> By default, editing the configuration of:
+>
+> - **A particular org** (for example, changing anchor peers) requires only the admin signature of that org.
+> - **The application** (like who the member orgs are) requires a majority of the application organizations’ admins to sign.
+> - **The orderer** requires a majority of the ordering organizations’ admins (of which there are by default only 1).
+> - **The top level channel group** requires both the agreement of a majority of application organization admins and orderer organization admins.
+
 2.13 启动部署新组织org2的peer节点，把对应的msp，以及tls拷贝到部署节点进行部署，然后安装链码到对应的peer节点(使用新版本)，这里部署细节就不多述(不清楚看我之前搭建联盟链的文章，链接待加)；
+
+> 注意：在加入新的Peer节点的时候需要这个联盟链的创世块文件，这个文件需要使用下面的命令进行获取：
+>
+> peer channel fetch 0 first.block -o orderer.mysample.com:7050 -c $CHANNEL_NAME --tls --cafile $ORDERER_CERT_CA
 
 2.14 由于之前背书策略没有org2的peer节点，所以这里还需要安装所有组织的peer上的链码为org2的peer上的链码版本，并且进行升级，升级链码也不累述了，看之前的文章(链接待加)；
 
@@ -155,4 +170,4 @@ peer channel signconfigtx -f $CHANNEL_UPDATED_FILE -o orderer.example.com:7050 -
 
 # 3.尾语
 
-看着这么多步骤是不是头大，但是熟悉了这个手动的过程是怎么回事，后面就可以自己写脚本一键之行了
+看着这么多步骤是不是头大？但是熟悉了这个手动的过程是怎么回事，后面就可以自己写脚本一键执行了。
