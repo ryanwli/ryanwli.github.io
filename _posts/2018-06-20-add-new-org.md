@@ -147,7 +147,7 @@ export CHANNEL_UPDATED_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/s
 peer channel signconfigtx -f $CHANNEL_UPDATED_FILE -o orderer.example.com:7050 --tls --cafile $ORDER_CA_FILE
 ```
 
-> 另外，上面我们只修改了Channel中Application中的Peer的配置，所以只需要在这个Application中已存在的Peer节点进行签名就可以了，下面是引用官方文档一部分，主要说的是如果需要修改channel里面的其他一些配置，这些配置需要哪些签名节点来对这个config_update_as_envelope.pb进行签名。
+> 另外，上面我们只修改了Channel中Application中的Peer的配置，所以只需要在这个Application中已存在的Peer节点进行签名就可以了，下面是引用官方文档一部分，主要说的是如果需要修改channel里面的其他一些配置，这些配置需要哪些节点的Admin来对这个config_update_as_envelope.pb进行签名。
 >
 > Once you’ve successfully generated the protobuf file, it’s time to get it signed. To do this, you need to know the relevant policy for whatever it is you’re trying to change.
 >
