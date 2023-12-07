@@ -592,5 +592,26 @@
       </div>
     </div>
   </div>
+  <script type="text/javascript">
+    // 监听滚动事件
+    window.addEventListener('scroll', () => {
+        // 获取当前滚动位置
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        // 将滚动位置存储到localStorage中
+        localStorage.setItem('scrollPosition', scrollTop);
+    });
+
+    // 页面加载时，恢复滚动位置
+    window.addEventListener('load', () => {
+        // 从localStorage中获取滚动位置
+        const scrollPosition = localStorage.getItem('scrollPosition');
+
+        // 如果存在滚动位置，则设置页面滚动到该位置
+        if (scrollPosition) {
+            window.scrollTo(0, parseInt(scrollPosition));
+        }
+    });  
+  </script>
 </body>
 </html>
