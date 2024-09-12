@@ -11,13 +11,22 @@
 <br/>
 <div>Now: <span id="timeSpan"></span></div> 
 <br/>
-<div id="myDiv">Subsistence Threshold: <span id="mySpan"></span></div> 
+<div id="myDiv">Subsistence Threshold(Regular): <span id="mySpan"></span></div> 
 <div>
-    <br/>
     Monthly Subsistence: <br/>
     RY: <span id="p1Span">0.55</span> <br/>
     RA: <span id="p2Span">0.35</span><br/>
     MK: <span id="p3Span">0.1</span><br/>
+</div>
+
+<br/>
+<br/>
+<div id="myDiv">Subsistence Threshold(Low): <span id="mySpanLow"></span></div> 
+<div>
+    Monthly Subsistence(Low): <br/>
+    RY: <span id="p1SpanLow">0.5</span> <br/>
+    RA: <span id="p2SpanLow">0.3</span><br/>
+    MK: <span id="p3SpanLow">0.1</span><br/>
 </div>
   
 <script>  
@@ -70,19 +79,24 @@ function calcUniversityDeposit() {
 document.addEventListener('DOMContentLoaded', function() {  
 
     var span = document.getElementById('mySpan');  
+    var spanLow = document.getElementById('mySpanLow');
       
     const p1RetireDate = new Date(2046, 5, 14);
     let p1Months = monthsBetweenDates(null, p1RetireDate);
     let p1Deposit = 0;
+    let p1DepositLow = 0;
     if (p1Months > 0) {
         p1Deposit = 0.55 / (0.02/12 * Math.pow(1 + 0.02/12, p1Months) / (Math.pow(1 + 0.02/12, p1Months) - 1));
+        p1DepositLow = 0.5 / (0.02/12 * Math.pow(1 + 0.02/12, p1Months) / (Math.pow(1 + 0.02/12, p1Months) - 1));
     }
 
     const p2RetireDate = new Date(2036, 12, 14);
     let p2Months = monthsBetweenDates(null, p2RetireDate);
     let p2Deposit = 0;
+    let p2DepositLow = 0;
     if (p2Months > 0) {
         p2Deposit = 0.35 / (0.02/12 * Math.pow(1 + 0.02/12, p2Months) / (Math.pow(1 + 0.02/12, p2Months) - 1));
+        p2DepositLow = 0.3 / (0.02/12 * Math.pow(1 + 0.02/12, p2Months) / (Math.pow(1 + 0.02/12, p2Months) - 1));
     }
 
     const p3PrimarySchoolFinishDate = new Date(2028, 7, 31);
@@ -93,34 +107,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     var myString = (p1Deposit + p2Deposit + p3Deposit + calcHighSchoolDeposit() + calcUniversityDeposit()).toFixed(3);
-
     span.innerHTML = myString; 
+    var myStringLow = (p1DepositLow + p2DepositLow + p3Deposit + calcHighSchoolDeposit() + calcUniversityDeposit()).toFixed(3);
+    spanLow.innerHTML = myStringLow; 
 
     var p1Span = document.getElementById('p1Span');
     var p2Span = document.getElementById('p2Span');
     var p3Span = document.getElementById('p3Span');
+    var p1SpanLow = document.getElementById('p1SpanLow');
+    var p2SpanLow = document.getElementById('p2SpanLow');
+    var p3SpanLow = document.getElementById('p3SpanLow');
 
     if (new Date() < p1RetireDate) {
         p1Span.innerHTML = "0.55";
+        p1SpanLow.innerHTML = "0.5";
     } else {
-        p1Span.innerHTML = "Retired"
+        p1Span.innerHTML = "Retired";
+        p1SpanLow.innerHTML = "Retired";
     } 
 
     if (new Date() < p2RetireDate) {
         p2Span.innerHTML = "0.35";
+        p2SpanLow.innerHTML = "0.3";
     } else {
-        p2Span.innerHTML = "Retired"
+        p2Span.innerHTML = "Retired";
+        p2SpanLow.innerHTML = "Retired";
     }
 
 
     if (new Date() < new Date(2028, 8, 1)) {
         p3Span.innerHTML = "0.1(ParentKeep)";
+        p3SpanLow.innerHTML = "0.1(ParentKeep)";
     } else if (new Date() < new Date(2031, 8, 1)) {
         p3Span.innerHTML = "0.15(ParentKeep)";
+        p3SpanLow.innerHTML = "0.15(ParentKeep)";
     } else if (new Date() < new Date(2035, 8, 1)) {
         p3Span.innerHTML = "0.25(SelfKeep)+0.1(ParentKeep)";
+        p3SpanLow.innerHTML = "0.25(SelfKeep)+0.1(ParentKeep)";
     } else {
-        p3Span.innerHTML = "Graduated"
+        p3Span.innerHTML = "Graduated";
+        p3SpanLow.innerHTML = "Graduated";
     }
 
     var timeSpan = document.getElementById('timeSpan');
