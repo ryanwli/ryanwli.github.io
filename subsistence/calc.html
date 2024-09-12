@@ -7,8 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 <title>Document</title>  
 </head>  
-<body>  
-  
+<body style="padding: 10px;">  
+<br/>
+<div>Now: <span id="timeSpan"></span></div> 
+<br/>
 <div id="myDiv">Subsistence Threshold: <span id="mySpan"></span></div> 
 <div>
     <br/>
@@ -120,6 +122,9 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         p3Span.innerHTML = "Graduated"
     }
+
+    var timeSpan = document.getElementById('timeSpan');
+    timeSpan.innerHTML = new Date();
 });
 </script>  
   
