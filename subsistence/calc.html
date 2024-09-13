@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var span = document.getElementById('mySpan');  
     var spanLow = document.getElementById('mySpanLow');
       
-    const p1RetireDate = new Date(2046, 5, 14);
+    const p1RetireDate = new Date(2049, 5, 14);
     let p1Months = monthsBetweenDates(null, p1RetireDate);
     let p1Deposit = 0;
     let p1DepositLow = 0;
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
         p1DepositLow = 0.5 / (0.02/12 * Math.pow(1 + 0.02/12, p1Months) / (Math.pow(1 + 0.02/12, p1Months) - 1));
     }
 
-    const p2RetireDate = new Date(2036, 12, 14);
+    const p2RetireDate = new Date(2041, 12, 14);
     let p2Months = monthsBetweenDates(null, p2RetireDate);
     let p2Deposit = 0;
     let p2DepositLow = 0;
