@@ -9,24 +9,29 @@
 </head>  
 <body style="padding: 10px;">  
 <br/>
-<div>Now: <span id="timeSpan"></span></div> 
+<div>
+    Now: <span id="timeSpan"></span><br>
+    Addr.:<br/>
+    SK: <span>Self Keep</span> <br/>
+    PK: <span>Parent Keep</span> <br/>
+</div> 
 <br/>
 <div id="myDiv">Subsistence Threshold(Regular): <span id="mySpan"></span></div> 
 <div>
-    Monthly Subsistence: <br/>
-    RY: <span id="p1Span">0.55</span> <br/>
-    RA: <span id="p2Span">0.35</span><br/>
-    MK: <span id="p3Span">0.1</span><br/>
+    Each Subsistence: <br/>
+    RY: <span id="p1SpanM">0.55</span> <br/>
+    RA: <span id="p2SpanM">0.35</span><br/>
+    MK: <span id="p3SpanM">0.1</span><br/>
 </div>
 
 <br/>
 <br/>
 <div id="myDiv">Subsistence Threshold(Low): <span id="mySpanLow"></span></div> 
 <div>
-    Monthly Subsistence(Low): <br/>
-    RY: <span id="p1SpanLow">0.5</span> <br/>
-    RA: <span id="p2SpanLow">0.3</span><br/>
-    MK: <span id="p3SpanLow">0.1</span><br/>
+    Each Subsistence(Low): <br/>
+    RY: <span id="p1SpanLowM">0.5</span> <br/>
+    RA: <span id="p2SpanLowM">0.3</span><br/>
+    MK: <span id="p3SpanLowM">0.1</span><br/>
 </div>
   
 <script>  
@@ -105,48 +110,48 @@ document.addEventListener('DOMContentLoaded', function() {
     if (p3PrimarySchoolFinishMonths > 0) {
         p3Deposit = 0.1 / (0.02/12 * Math.pow(1 + 0.02/12, p3PrimarySchoolFinishMonths) / (Math.pow(1 + 0.02/12, p3PrimarySchoolFinishMonths) - 1));
     }
-    
-    var myString = (p1Deposit + p2Deposit + p3Deposit + calcHighSchoolDeposit() + calcUniversityDeposit()).toFixed(3);
+    p3Deposit = p3Deposit + calcHighSchoolDeposit() + calcUniversityDeposit();
+    var myString = (p1Deposit + p2Deposit + p3Deposit).toFixed(3);
     span.innerHTML = myString; 
-    var myStringLow = (p1DepositLow + p2DepositLow + p3Deposit + calcHighSchoolDeposit() + calcUniversityDeposit()).toFixed(3);
+    var myStringLow = (p1DepositLow + p2DepositLow + p3Deposit).toFixed(3);
     spanLow.innerHTML = myStringLow; 
 
-    var p1Span = document.getElementById('p1Span');
-    var p2Span = document.getElementById('p2Span');
-    var p3Span = document.getElementById('p3Span');
-    var p1SpanLow = document.getElementById('p1SpanLow');
-    var p2SpanLow = document.getElementById('p2SpanLow');
-    var p3SpanLow = document.getElementById('p3SpanLow');
+    var p1SpanM = document.getElementById('p1SpanM');
+    var p2SpanM = document.getElementById('p2SpanM');
+    var p3SpanM = document.getElementById('p3SpanM');
+    var p1SpanLowM = document.getElementById('p1SpanLowM');
+    var p2SpanLowM = document.getElementById('p2SpanLowM');
+    var p3SpanLowM = document.getElementById('p3SpanLowM');
 
     if (new Date() < p1RetireDate) {
-        p1Span.innerHTML = "0.55";
-        p1SpanLow.innerHTML = "0.5";
+        p1SpanM.innerHTML = "0.55(M),"+p1Deposit.toFixed(3)+"(T)";
+        p1SpanLowM.innerHTML = "0.5(M),"+p1DepositLow.toFixed(3)+"(T)";
     } else {
-        p1Span.innerHTML = "Retired";
-        p1SpanLow.innerHTML = "Retired";
+        p1SpanM.innerHTML = "Retired";
+        p1SpanLowM.innerHTML = "Retired";
     } 
 
     if (new Date() < p2RetireDate) {
-        p2Span.innerHTML = "0.35";
-        p2SpanLow.innerHTML = "0.3";
+        p2SpanM.innerHTML = "0.35(M),"+p2Deposit.toFixed(3)+"(T)";
+        p2SpanLowM.innerHTML = "0.3(M),"+p2DepositLow.toFixed(3)+"(T)";
     } else {
-        p2Span.innerHTML = "Retired";
-        p2SpanLow.innerHTML = "Retired";
+        p2SpanM.innerHTML = "Retired";
+        p2SpanLowM.innerHTML = "Retired";
     }
 
 
     if (new Date() < new Date(2028, 8, 1)) {
-        p3Span.innerHTML = "0.1(ParentKeep)";
-        p3SpanLow.innerHTML = "0.1(ParentKeep)";
+        p3SpanM.innerHTML = "0.1(M,PK),"+p3Deposit.toFixed(3)+"(T)";
+        p3SpanLowM.innerHTML = "0.1(M,PK),"+p3Deposit.toFixed(3)+"(T)";
     } else if (new Date() < new Date(2031, 8, 1)) {
-        p3Span.innerHTML = "0.15(ParentKeep)";
-        p3SpanLow.innerHTML = "0.15(ParentKeep)";
+        p3SpanM.innerHTML = "0.15(M,PK),"+p3Deposit.toFixed(3)+"(T)";
+        p3SpanLowM.innerHTML = "0.15(M,PK),"+p3Deposit.toFixed(3)+"(T)";
     } else if (new Date() < new Date(2035, 8, 1)) {
-        p3Span.innerHTML = "0.25(SelfKeep)+0.1(ParentKeep)";
-        p3SpanLow.innerHTML = "0.25(SelfKeep)+0.1(ParentKeep)";
+        p3SpanM.innerHTML = "0.25(M,SK)+0.1(M,PK),"+p3Deposit.toFixed(3)+"(T)";
+        p3SpanLowM.innerHTML = "0.25(M,SK)+0.1(M,PK),"+p3Deposit.toFixed(3)+"(T)";
     } else {
-        p3Span.innerHTML = "Graduated";
-        p3SpanLow.innerHTML = "Graduated";
+        p3SpanM.innerHTML = "Graduated";
+        p3SpanLowM.innerHTML = "Graduated";
     }
 
     var timeSpan = document.getElementById('timeSpan');
