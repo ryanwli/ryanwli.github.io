@@ -8,14 +8,12 @@
 <title>Document</title>  
 </head>  
 <body style="padding: 10px;">  
-<br/>
 <div>
     Now: <span id="timeSpan"></span><br>
     Abbr.:<br/>
     SK: <span>Self Keep</span> <br/>
     PK: <span>Parent Keep</span> <br/>
 </div> 
-<br/>
 <br/>
 <div id="myDiv">Subsistence Threshold(Regular): <span id="mySpan"></span></div> 
 <div>
@@ -26,13 +24,20 @@
 </div>
 
 <br/>
-<br/>
 <div id="myDiv">Subsistence Threshold(Low): <span id="mySpanLow"></span></div> 
 <div>
     Each Subsistence(Low): <br/>
     RY: <span id="p1SpanLowM">0.5</span> <br/>
     RA: <span id="p2SpanLowM">0.3</span><br/>
     MK: <span id="p3SpanLowM">0.1</span><br/>
+</div>
+<br/>
+<div id="myDiv">Threshold Calc: <input id="inputThreshold" style="width:60px;" onchange="javascript:dynamicCalc();" /></div> 
+<div>
+    Each Subsistence(Low): <br/>
+    RY: <span id="p1SpanCalcM">0.5</span> <br/>
+    RA: <span id="p2SpanCalcM">0.3</span><br/>
+    MK: <span id="p3SpanCalcM">0.1</span><br/>
 </div>
   
 <script>  
@@ -82,11 +87,7 @@ function calcUniversityDeposit() {
     return p3Deposit;
 }
 
-document.addEventListener('DOMContentLoaded', function() {  
-
-    var span = document.getElementById('mySpan');  
-    var spanLow = document.getElementById('mySpanLow');
-      
+function getP1Deposit() {
     const p1RetireDate = new Date(2049, 5, 14);
     let p1Months = monthsBetweenDates(null, p1RetireDate);
     let p1Deposit = 0;
@@ -95,7 +96,15 @@ document.addEventListener('DOMContentLoaded', function() {
         p1Deposit = 0.55 / (0.02/12 * Math.pow(1 + 0.02/12, p1Months) / (Math.pow(1 + 0.02/12, p1Months) - 1));
         p1DepositLow = 0.5 / (0.02/12 * Math.pow(1 + 0.02/12, p1Months) / (Math.pow(1 + 0.02/12, p1Months) - 1));
     }
+    return { 
+            regular:p1Deposit, 
+            low:p1DepositLow, 
+            retireDate:p1RetireDate,
+            months:p1Months
+           };
+}
 
+function getP2Deposit() {
     const p2RetireDate = new Date(2041, 12, 14);
     let p2Months = monthsBetweenDates(null, p2RetireDate);
     let p2Deposit = 0;
@@ -104,59 +113,113 @@ document.addEventListener('DOMContentLoaded', function() {
         p2Deposit = 0.35 / (0.02/12 * Math.pow(1 + 0.02/12, p2Months) / (Math.pow(1 + 0.02/12, p2Months) - 1));
         p2DepositLow = 0.3 / (0.02/12 * Math.pow(1 + 0.02/12, p2Months) / (Math.pow(1 + 0.02/12, p2Months) - 1));
     }
+    return { 
+            regular:p2Deposit, 
+            low:p2DepositLow,
+            retireDate:p2RetireDate,
+            months: p2Months
+           };
+}
 
+function getP3Deposit() {
     const p3PrimarySchoolFinishDate = new Date(2028, 7, 31);
     let p3PrimarySchoolFinishMonths = monthsBetweenDates(null, p3PrimarySchoolFinishDate);
     let p3Deposit = 0;
     if (p3PrimarySchoolFinishMonths > 0) {
         p3Deposit = 0.1 / (0.02/12 * Math.pow(1 + 0.02/12, p3PrimarySchoolFinishMonths) / (Math.pow(1 + 0.02/12, p3PrimarySchoolFinishMonths) - 1));
     }
-    p3Deposit = p3Deposit + calcHighSchoolDeposit() + calcUniversityDeposit();
-    var myString = (p1Deposit + p2Deposit + p3Deposit).toFixed(3);
-    span.innerHTML = myString; 
-    var myStringLow = (p1DepositLow + p2DepositLow + p3Deposit).toFixed(3);
-    spanLow.innerHTML = myStringLow; 
+    p3Deposit += calcHighSchoolDeposit() + calcUniversityDeposit();
+    return {
+            regular:p3Deposit,
+            low:p3Deposit
+           };
+}
+
+function fillRegularAndLowSpan(p1Deposit, p2Deposit, p3Deposit) {
+    var span = document.getElementById('mySpan');  
+    span.innerHTML = (p1Deposit.regular + p2Deposit.regular + p3Deposit.regular).toFixed(3);
+
+    var spanLow = document.getElementById('mySpanLow');
+    spanLow.innerHTML = (p1Deposit.low + p2Deposit.low + p3Deposit.low).toFixed(3);
 
     var p1SpanM = document.getElementById('p1SpanM');
-    var p2SpanM = document.getElementById('p2SpanM');
-    var p3SpanM = document.getElementById('p3SpanM');
     var p1SpanLowM = document.getElementById('p1SpanLowM');
-    var p2SpanLowM = document.getElementById('p2SpanLowM');
-    var p3SpanLowM = document.getElementById('p3SpanLowM');
-
-    if (new Date() < p1RetireDate) {
-        p1SpanM.innerHTML = "0.55(M),"+p1Deposit.toFixed(3)+"(T)";
-        p1SpanLowM.innerHTML = "0.5(M),"+p1DepositLow.toFixed(3)+"(T)";
+    if (new Date() < p1Deposit.retireDate) {
+        p1SpanM.innerHTML = "0.55(M),"+p1Deposit.regular.toFixed(3)+"(T)";
+        p1SpanLowM.innerHTML = "0.5(M),"+p1Deposit.low.toFixed(3)+"(T)";
     } else {
         p1SpanM.innerHTML = "Retired";
         p1SpanLowM.innerHTML = "Retired";
-    } 
+    }
 
-    if (new Date() < p2RetireDate) {
-        p2SpanM.innerHTML = "0.35(M),"+p2Deposit.toFixed(3)+"(T)";
-        p2SpanLowM.innerHTML = "0.3(M),"+p2DepositLow.toFixed(3)+"(T)";
+    var p2SpanM = document.getElementById('p2SpanM');
+    var p2SpanLowM = document.getElementById('p2SpanLowM');
+    if (new Date() < p2Deposit.retireDate) {
+        p2SpanM.innerHTML = "0.35(M),"+p2Deposit.regular.toFixed(3)+"(T)";
+        p2SpanLowM.innerHTML = "0.3(M),"+p2Deposit.low.toFixed(3)+"(T)";
     } else {
         p2SpanM.innerHTML = "Retired";
         p2SpanLowM.innerHTML = "Retired";
     }
 
-
+    var p3SpanM = document.getElementById('p3SpanM');
+    var p3SpanLowM = document.getElementById('p3SpanLowM');
+    var p3SpanCalcM = document.getElementById('p3SpanCalcM');
     if (new Date() < new Date(2028, 8, 1)) {
-        p3SpanM.innerHTML = "0.1(M,PK),"+p3Deposit.toFixed(3)+"(T)";
-        p3SpanLowM.innerHTML = "0.1(M,PK),"+p3Deposit.toFixed(3)+"(T)";
+        p3SpanM.innerHTML = "0.1(M,PK),"+p3Deposit.regular.toFixed(3)+"(T)";
     } else if (new Date() < new Date(2031, 8, 1)) {
-        p3SpanM.innerHTML = "0.15(M,PK),"+p3Deposit.toFixed(3)+"(T)";
-        p3SpanLowM.innerHTML = "0.15(M,PK),"+p3Deposit.toFixed(3)+"(T)";
+        p3SpanM.innerHTML = "0.15(M,PK),"+p3Deposit.regular.toFixed(3)+"(T)";
     } else if (new Date() < new Date(2035, 8, 1)) {
-        p3SpanM.innerHTML = "0.25(M,SK)+0.1(M,PK),"+p3Deposit.toFixed(3)+"(T)";
-        p3SpanLowM.innerHTML = "0.25(M,SK)+0.1(M,PK),"+p3Deposit.toFixed(3)+"(T)";
+        p3SpanM.innerHTML = "0.25(M,SK)+0.1(M,PK),"+p3Deposit.regular.toFixed(3)+"(T)";
     } else {
         p3SpanM.innerHTML = "Graduated";
-        p3SpanLowM.innerHTML = "Graduated";
     }
+    p3SpanLowM.innerHTML = p3SpanM.innerHTML;
+    p3SpanCalcM.innerHTML = p3SpanM.innerHTML;
+}
+
+function dynamicCalc() {
+    
+    const p1Deposit = getP1Deposit();
+    const p2Deposit = getP2Deposit();
+    const p3Deposit = getP3Deposit();
+
+    let inputThreshold = parseFloat(document.getElementById('inputThreshold').value);
+
+    p1Threshold = p1Deposit.low / (p1Deposit.low + p2Deposit.low) * (inputThreshold - p3Deposit.low);
+    p2Threshold = p2Deposit.low / (p1Deposit.low + p2Deposit.low) * (inputThreshold - p3Deposit.low);
+
+    p1MonthlyThreshold = p1Threshold * (0.02/12 * Math.pow(1 + 0.02/12, p1Deposit.months) / (Math.pow(1 + 0.02/12, p1Deposit.months) - 1));
+    p2MonthlyThreshold = p2Threshold * (0.02/12 * Math.pow(1 + 0.02/12, p2Deposit.months) / (Math.pow(1 + 0.02/12, p2Deposit.months) - 1));
+
+    var p1SpanCalcM = document.getElementById('p1SpanCalcM');
+    if (new Date() < p1Deposit.retireDate) {
+        p1SpanCalcM.innerHTML = p1MonthlyThreshold.toFixed(3) + "(M),"+p1Threshold.toFixed(3)+"(T)";
+    } else {
+        p1SpanCalcM.innerHTML = "Retired";
+    }
+
+    var p2SpanCalcM = document.getElementById('p2SpanCalcM');
+    if (new Date() < p2Deposit.retireDate) {
+        p2SpanCalcM.innerHTML = p2MonthlyThreshold.toFixed(3) + "(M)," + p2Threshold.toFixed(3)+"(T)";
+    } else {
+        p2SpanCalcM.innerHTML = "Retired";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {  
 
     var timeSpan = document.getElementById('timeSpan');
     timeSpan.innerHTML = new Date();
+    
+    const p1Deposit = getP1Deposit();
+    const p2Deposit = getP2Deposit();
+    const p3Deposit = getP3Deposit();
+
+    fillRegularAndLowSpan(p1Deposit, p2Deposit, p3Deposit);
+    
+
+    
 });
 </script>  
   
