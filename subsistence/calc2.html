@@ -214,11 +214,11 @@ function fillLowSpan(p1Deposit, p2Deposit, p3Deposit) {
 
     var p3SpanM = document.getElementById('p3SpanM');
     if (new Date() < new Date(2028, 7, 1)) {
-        p3SpanM.innerHTML = "M:0.1(M,PK),T:"+p3Deposit.liveCostT.toFixed(4);
+        p3SpanM.innerHTML = "M:0.1(PK),T:"+p3Deposit.liveCostT.toFixed(4);
     } else if (new Date() < new Date(2031, 7, 1)) {
-        p3SpanM.innerHTML = "M:0.15(M,PK),T:"+p3Deposit.liveCostT.toFixed(4);
+        p3SpanM.innerHTML = "M:0.15(PK),T:"+p3Deposit.liveCostT.toFixed(4);
     } else if (new Date() < new Date(2035, 7, 1)) {
-        p3SpanM.innerHTML = "M:0.25(M,SK)+0.1(M,PK),T:"+p3Deposit.liveCostT.toFixed(4);
+        p3SpanM.innerHTML = "M:0.25(SK)+0.1(PK),T:"+p3Deposit.liveCostT.toFixed(4);
     } else {
         p3SpanM.innerHTML = "Graduated";
     }
