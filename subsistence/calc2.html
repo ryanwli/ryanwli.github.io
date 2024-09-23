@@ -1,0 +1,244 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <link rel="apple-touch-icon-precomposed" href="https://ryanwli.github.io/trip/2024/guilin/app_icon.png" /> 
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Doc</title>  
+</head>  
+<body style="padding: 10px;">  
+<div>
+    Now: <span id="timeSpan"></span><br>
+    Abbr.:<br/>
+    M: <span>Monthly</span> <br/>
+    T: <span>Totally</span> <br/>
+    P: <span>Pension</span> <br/>
+    H: <span>Health</span> <br/>
+    L: <span>Live Cost</span> <br/>
+    SK: <span>Self Keep</span> <br/>
+    PK: <span>Parent Keep</span> <br/>
+</div> 
+<br/>
+<div id="myDiv">Subsistence Threshold(Low): <span id="mySpan"></span></div> 
+<div>
+    Each Subsistence: <br/>
+    RY: <span id="p1SpanM">0.55</span> <br/>
+    RA: <span id="p2SpanM">0.35</span><br/>
+    MK: <span id="p3SpanM">0.1</span><br/>
+</div>
+<br/>
+  
+<script>  
+
+function monthsBetweenDates(startDate, endDate) {  
+    function dateToMonths(date) {  
+        let years = date.getFullYear() - 1900;  
+        let months = years * 12 + date.getMonth() + 1;  
+        return months;  
+    }  
+    const now = new Date();
+    const startMonths = dateToMonths(startDate || now); 
+    const endMonths = dateToMonths(endDate);  
+  
+    return endMonths - startMonths;  
+} 
+
+function calcHighSchoolDeposit() {
+    const p3BeginDate = new Date(2028, 7, 1);
+    let p3BeginMonths = monthsBetweenDates(null, p3BeginDate);
+    const p3EndDate = new Date(2031, 6, 31);
+    let p3EndMonths = monthsBetweenDates(p3BeginDate, p3EndDate);
+    let p3Deposit = 0;
+    if (p3BeginMonths > 0) {
+        p3Deposit = 0.15 / (0.02/12 * Math.pow(1 + 0.02/12, p3EndMonths) / (Math.pow(1 + 0.02/12, p3EndMonths) - 1));
+        p3Deposit = p3Deposit / Math.pow(1 + 0.02/12, p3BeginMonths);
+        
+    } else if (p3EndMonths > 0) {
+        p3Deposit = 0.15 / (0.02/12 * Math.pow(1 + 0.02/12, p3EndMonths) / (Math.pow(1 + 0.02/12, p3EndMonths) - 1));
+    }
+    return p3Deposit;
+}
+
+function calcUniversityDeposit() {
+    const p3BeginDate = new Date(2031, 7, 1);
+    let p3BeginMonths = monthsBetweenDates(null, p3BeginDate);
+    const p3EndDate = new Date(2035, 6, 31);
+    let p3EndMonths = monthsBetweenDates(p3BeginDate, p3EndDate);
+    let p3Deposit = 0;
+    if (p3BeginMonths > 0) {
+        p3Deposit = 0.35 / (0.02/12 * Math.pow(1 + 0.02/12, p3EndMonths) / (Math.pow(1 + 0.02/12, p3EndMonths) - 1));
+        p3Deposit = p3Deposit / Math.pow(1 + 0.02/12, p3BeginMonths);
+        
+    } else if (p3EndMonths > 0) {
+        p3Deposit = 0.35 / (0.02/12 * Math.pow(1 + 0.02/12, p3EndMonths) / (Math.pow(1 + 0.02/12, p3EndMonths) - 1));
+    }
+    return p3Deposit;
+}
+
+function getP1Deposit() {
+    var liveCostM = 0.3;
+    var liveCostT = 0;
+    const retireDate = new Date(2049, 4, 14);
+    var retireMonths = monthsBetweenDates(null, retireDate);
+    if (retireMonths > 0) {
+        liveCostT = parseFloat((liveCostM / (0.02/12 * Math.pow(1 + 0.02/12, retireMonths) / (Math.pow(1 + 0.02/12, retireMonths) - 1))).toFixed(4));
+    }
+
+    const healthBase = 0.057142;
+    const healthRate = 0.035;
+    var healthBaseYears = Math.floor(retireMonths / 12);
+    var healthT = 0;
+    if (retireMonths > 0) {
+        healthT = parseFloat(((healthBase * Math.pow(1 + healthRate, healthBaseYears) + healthBase) / 2  * retireMonths).toFixed(4));
+    }
+    const healthBaseDate = new Date(2024,8,1);
+    var currenthealthBaseMonths = monthsBetweenDates(healthBaseDate, new Date());
+    var currenthealthBaseYears = Math.floor(currenthealthBaseMonths / 12);
+    var healthM = 0;
+    if (retireMonths > 0) {
+        healthM = parseFloat((healthBase * Math.pow(1 + 0.05, currenthealthBaseYears)).toFixed(4));
+    }
+
+    const pensionBase = 0.09022;
+    const pensionRate = 0.03
+    const stopPayPensionDate = new Date(2029, 8, 1);
+    var stopPayPensionMonths = monthsBetweenDates(null, stopPayPensionDate);
+    var stopPayPensionYears = Math.floor(stopPayPensionMonths / 12);
+    var pensionT = 0;
+    if (stopPayPensionMonths > 0) {
+        pensionT = parseFloat(((pensionBase * Math.pow(1 + pensionRate, stopPayPensionYears) + pensionBase) / 2  * stopPayPensionMonths).toFixed(4));
+    }
+    const pensionBaseDate = new Date(2024,8,1);
+    var pensionBaseMonths = monthsBetweenDates(pensionBaseDate, new Date());
+    var pensionBaseYears = Math.floor(pensionBaseMonths / 12);
+    if (stopPayPensionMonths > 0) {
+        pensionM = parseFloat((pensionBase * Math.pow(1 + 0.05, pensionBaseYears)).toFixed(4));
+    }
+
+    return { 
+            pensionM:pensionM, 
+            pensionT:pensionT,
+            healthM:healthM,
+            healthT:healthT,
+            liveCostM:liveCostM, 
+            liveCostT:liveCostT,
+            retireDate:retireDate
+    };
+}
+
+function getP2Deposit() {
+    var liveCostM = 0.15;
+    var liveCostT = 0;
+    const retireDate = new Date(2041, 11, 14);
+    var retireMonths = monthsBetweenDates(null, retireDate);
+    if (retireMonths > 0) {
+        liveCostT = parseFloat((liveCostM / (0.02/12 * Math.pow(1 + 0.02/12, retireMonths) / (Math.pow(1 + 0.02/12, retireMonths) - 1))).toFixed(4));
+    }
+
+    const healthBase = 0.057142;
+    const healthRate = 0.035;
+    var healthBaseYears = Math.floor(retireMonths / 12);
+    var healthT = 0;
+    if (retireMonths > 0) {
+        healthT = parseFloat(((healthBase * Math.pow(1 + healthRate, healthBaseYears) + healthBase) / 2  * retireMonths).toFixed(4));
+    }
+    const healthBaseDate = new Date(2024,8,1);
+    var currenthealthBaseMonths = monthsBetweenDates(healthBaseDate, new Date());
+    var currenthealthBaseYears = Math.floor(currenthealthBaseMonths / 12);
+    var healthM = 0;
+    if (retireMonths > 0) {
+        healthM = parseFloat((healthBase * Math.pow(1 + 0.05, currenthealthBaseYears)).toFixed(4));
+    }
+
+    const pensionBase = 0.09022;
+    const pensionRate = 0.03
+    const stopPayPensionDate = new Date(2029, 8, 1);
+    var stopPayPensionMonths = monthsBetweenDates(null, stopPayPensionDate);
+    var stopPayPensionYears = Math.floor(stopPayPensionMonths / 12);
+    var pensionT = 0;
+    if (stopPayPensionMonths > 0) {
+        pensionT = parseFloat(((pensionBase * Math.pow(1 + pensionRate, stopPayPensionYears) + pensionBase) / 2  * stopPayPensionMonths).toFixed(4));
+    }
+    const pensionBaseDate = new Date(2024,8,1);
+    var pensionBaseMonths = monthsBetweenDates(pensionBaseDate, new Date());
+    var pensionBaseYears = Math.floor(pensionBaseMonths / 12);
+    var pensionM = 0;
+    if (stopPayPensionMonths > 0) {
+        pensionM = parseFloat((pensionBase * Math.pow(1 + 0.05, pensionBaseYears)).toFixed(4));
+    }
+
+
+
+    return { 
+            pensionM:pensionM, 
+            pensionT:pensionT,
+            healthM:healthM,
+            healthT:healthT,
+            liveCostM:liveCostM, 
+            liveCostT:liveCostT,
+            retireDate:retireDate
+           };
+}
+
+function getP3Deposit() {
+    const p3PrimarySchoolFinishDate = new Date(2028, 6, 31);
+    let p3PrimarySchoolFinishMonths = monthsBetweenDates(null, p3PrimarySchoolFinishDate);
+    let p3Deposit = 0;
+    if (p3PrimarySchoolFinishMonths > 0) {
+        p3Deposit = 0.1 / (0.02/12 * Math.pow(1 + 0.02/12, p3PrimarySchoolFinishMonths) / (Math.pow(1 + 0.02/12, p3PrimarySchoolFinishMonths) - 1));
+    }
+    p3Deposit += calcHighSchoolDeposit() + calcUniversityDeposit();
+    return {
+            liveCostT:p3Deposit
+    };
+}
+
+function fillLowSpan(p1Deposit, p2Deposit, p3Deposit) {
+    var span = document.getElementById('mySpan');  
+    span.innerHTML = (p1Deposit.pensionT + p1Deposit.healthT + p1Deposit.liveCostT + p2Deposit.pensionT + p2Deposit.healthT + p2Deposit.liveCostT + p3Deposit.liveCostT).toFixed(4);
+
+    var p1SpanM = document.getElementById('p1SpanM');
+    if (new Date() < p1Deposit.retireDate) {
+        p1SpanM.innerHTML = "M:" + (p1Deposit.pensionM + p1Deposit.healthM + p1Deposit.liveCostM) + "(P:" + p1Deposit.pensionM +",H:" + p1Deposit.healthM + ",L:" + p1Deposit.liveCostM + "),T:"+(p1Deposit.pensionT + p1Deposit.healthT + p1Deposit.liveCostT).toFixed(4);
+    } else {
+        p1SpanM.innerHTML = "Retired"
+    }
+
+    var p2SpanM = document.getElementById('p2SpanM');
+    if (new Date() < p2Deposit.retireDate) {
+        p2SpanM.innerHTML = "M:" + (p2Deposit.pensionM + p2Deposit.healthM + p2Deposit.liveCostM) + "(P:" + p2Deposit.pensionM +",H:" + p2Deposit.healthM + ",L:" + p2Deposit.liveCostM + "),T:"+(p2Deposit.pensionT + p2Deposit.healthT + p2Deposit.liveCostT).toFixed(4);
+    } else {
+        p2SpanM.innerHTML = "Retired"
+    }
+
+    var p3SpanM = document.getElementById('p3SpanM');
+    if (new Date() < new Date(2028, 7, 1)) {
+        p3SpanM.innerHTML = "M:0.1(M,PK),T:"+p3Deposit.liveCostT.toFixed(4);
+    } else if (new Date() < new Date(2031, 7, 1)) {
+        p3SpanM.innerHTML = "M:0.15(M,PK),T:"+p3Deposit.liveCostT.toFixed(4);
+    } else if (new Date() < new Date(2035, 7, 1)) {
+        p3SpanM.innerHTML = "M:0.25(M,SK)+0.1(M,PK),T:"+p3Deposit.liveCostT.toFixed(4);
+    } else {
+        p3SpanM.innerHTML = "Graduated";
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {  
+
+    var timeSpan = document.getElementById('timeSpan');
+    timeSpan.innerHTML = new Date();
+    
+    const p1Deposit = getP1Deposit();
+    const p2Deposit = getP2Deposit();
+    const p3Deposit = getP3Deposit();
+
+    fillLowSpan(p1Deposit, p2Deposit, p3Deposit);
+    
+
+    
+});
+</script>  
+  
+</body>  
+</html>
